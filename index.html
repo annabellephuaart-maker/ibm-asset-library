@@ -407,6 +407,72 @@
 
   #popup-cancel:hover { background: #48484A; }
   #popup-copy:hover { background: #0070E0; }
+
+  /* ── Mobile ── */
+  #cat-dropdown { display: none; }
+
+  @media (max-width: 640px) {
+    :root { --header-h: auto; }
+
+    header {
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      gap: 10px;
+      height: auto;
+    }
+
+    header h1 { font-size: 13px; }
+
+    .search-wrap { order: 3; flex: 1 1 100%; max-width: 100%; }
+
+    .ds-tabs { order: 2; margin-left: 0; }
+    .ds-tabs button { height: 32px; padding: 0 12px; font-size: 12px; }
+
+    .count-badge { display: none; }
+
+    .color-select-wrap { order: 1; margin-left: auto; }
+    .color-select-wrap label { display: none; }
+    .color-select-wrap select { height: 32px; font-size: 12px; }
+
+    aside { display: none; }
+
+    #cat-dropdown {
+      display: block;
+      width: 100%;
+      background: var(--white);
+      border: none;
+      border-bottom: 1px solid var(--gray-20);
+      font-size: 13px;
+      color: var(--gray-100);
+      padding: 10px 16px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236F6F6F' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-color: var(--white);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .layout { flex-direction: column; }
+
+    main { padding: 12px; }
+
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .icon-card { padding: 12px 4px 8px; }
+    .icon-card svg { width: 40px; height: 40px; }
+    .icon-card .name { font-size: 9px; max-width: 72px; }
+
+    footer { font-size: 11px; padding: 0 16px; flex-wrap: wrap; gap: 4px; height: auto; min-height: 44px; }
+
+    #copy-popup { width: calc(100vw - 32px); left: 16px !important; }
+  }
 </style>
 </head>
 <body>
@@ -437,6 +503,7 @@
     <ul id="cat-list"></ul>
   </aside>
   <main id="main">
+    <select id="cat-dropdown"></select>
     <div class="grid" id="grid"></div>
   </main>
 </div>
@@ -537,18 +604,47 @@
   let activeCat = ALL;
   let searchQuery = '';
 
-  // ── Build sidebar ──
+  const catDropdown = document.getElementById('cat-dropdown');
+
+  // ── Build sidebar + dropdown ──
   function buildSidebar() {
     catList.innerHTML = '';
+    catDropdown.innerHTML = '';
     const data = currentData();
     const total = Object.values(data).reduce((s, v) => s + v.length, 0);
+
+    // Sidebar
     const allBtn = makeBtn('All', total, true);
     catList.appendChild(allBtn.li);
     for (const cat of Object.keys(data).sort()) {
       const btn = makeBtn(cat, data[cat].length, false);
       catList.appendChild(btn.li);
     }
+
+    // Dropdown
+    const allOpt = document.createElement('option');
+    allOpt.value = ALL;
+    allOpt.textContent = 'All (' + total + ')';
+    catDropdown.appendChild(allOpt);
+    for (const cat of Object.keys(data).sort()) {
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat + ' (' + data[cat].length + ')';
+      catDropdown.appendChild(opt);
+    }
+    catDropdown.value = activeCat;
   }
+
+  catDropdown.addEventListener('change', () => {
+    activeCat = catDropdown.value;
+    document.querySelectorAll('#cat-list button').forEach(b => b.classList.remove('active'));
+    const btns = catList.querySelectorAll('button');
+    const idx = activeCat === ALL ? 0 : Object.keys(currentData()).sort().indexOf(activeCat) + 1;
+    if (btns[idx]) btns[idx].classList.add('active');
+    searchInput.value = '';
+    searchQuery = '';
+    render();
+  });
 
   buildSidebar();
 
@@ -565,6 +661,7 @@
       document.querySelectorAll('#cat-list button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeCat = isAll ? ALL : label;
+      catDropdown.value = activeCat;
       searchInput.value = '';
       searchQuery = '';
       render();
