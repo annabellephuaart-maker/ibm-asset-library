@@ -443,6 +443,8 @@
 
 <footer>
   For enquiries: Slack <span>@annabelle.phua</span>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  Source: <a href="https://www.ibm.com/design/language/iconography/pictograms/library" target="_blank" style="color:#8D8D8D;text-decoration:none;">ibm.com/design/language</a>
 </footer>
 
 <div id="toast">Copied to clipboard</div>
@@ -482,6 +484,18 @@
 <script src="data.js"></script>
 <script>
 (function () {
+  // ── Password gate ──
+  const PASS = 'ibmdesign';
+  const KEY = 'ibmal_auth';
+  if (sessionStorage.getItem(KEY) !== '1') {
+    const entered = prompt('Enter password to access IBM Asset Library:');
+    if (entered !== PASS) {
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#6F6F6F;font-size:14px;">Access denied.</div>';
+      throw new Error('Unauthorised');
+    }
+    sessionStorage.setItem(KEY, '1');
+  }
+
   const grid = document.getElementById('grid');
   const catList = document.getElementById('cat-list');
   const searchInput = document.getElementById('search');
