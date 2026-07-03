@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBM Icon Library</title>
+<style>
+  :root {
+    --blue: #0F62FE;
+    --blue-dark: #0043CE;
+    --gray-10: #F4F4F4;
+    --gray-20: #E0E0E0;
+    --gray-60: #6F6F6F;
+    --gray-100: #161616;
+    --white: #FFFFFF;
+    --sidebar-w: 220px;
+    --header-h: 56px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    background: var(--gray-10);
+    color: var(--gray-100);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── Header ── */
+  header {
+    height: var(--header-h);
+    background: var(--gray-100);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  header h1 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.16px;
+    white-space: nowrap;
+  }
+
+  .search-wrap {
+    flex: 1;
+    max-width: 480px;
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    height: 36px;
+    background: #393939;
+    border: 1px solid #525252;
+    border-radius: 0;
+    color: var(--white);
+    font-size: 14px;
+    padding: 0 36px 0 12px;
+    outline: none;
+  }
+
+  .search-wrap input::placeholder { color: #8D8D8D; }
+  .search-wrap input:focus { border-color: var(--blue); }
+
+  .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8D8D8D;
+    pointer-events: none;
+    font-size: 16px;
+  }
+
+  .count-badge {
+    font-size: 12px;
+    color: #8D8D8D;
+    white-space: nowrap;
+  }
+
+  /* ── Color picker ── */
+  .color-select-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .color-select-wrap label {
+    font-size: 12px;
+    color: #8D8D8D;
+    white-space: nowrap;
+  }
+
+  .color-select-wrap select {
+    background: #393939;
+    border: 1px solid #525252;
+    color: var(--white);
+    font-size: 13px;
+    padding: 4px 28px 4px 10px;
+    height: 36px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238D8D8D' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    border-radius: 0;
+  }
+
+  .color-select-wrap select:focus { border-color: var(--blue); }
+
+  /* White mode: dark card backgrounds */
+  body.icon-white .icon-card { background: #393939; }
+  body.icon-white .icon-card:hover { border-color: #8D8D8D; }
+
+  /* ── Layout ── */
+  .layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Sidebar ── */
+  aside {
+    width: var(--sidebar-w);
+    background: var(--white);
+    border-right: 1px solid var(--gray-20);
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 8px 0;
+  }
+
+  aside ul { list-style: none; }
+
+  aside li button {
+    width: 100%;
+    text-align: left;
+    padding: 8px 16px;
+    font-size: 13px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-100);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  aside li button:hover { background: var(--gray-10); }
+
+  aside li button.active {
+    background: #E8F0FE;
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  aside li button .cat-count {
+    font-size: 11px;
+    color: var(--gray-60);
+    flex-shrink: 0;
+    margin-left: 4px;
+  }
+
+  aside li button.active .cat-count { color: var(--blue); }
+
+  /* ── Main grid area ── */
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-60);
+    letter-spacing: 0.32px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 2px;
+  }
+
+  .icon-card {
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 8px 12px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: border-color 0.1s, box-shadow 0.1s;
+    position: relative;
+  }
+
+  .icon-card:hover {
+    border-color: var(--blue);
+    z-index: 1;
+  }
+
+  .icon-card svg {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+
+  .icon-card .name {
+    font-size: 10px;
+    color: var(--gray-60);
+    text-align: center;
+    margin-top: 8px;
+    line-height: 1.3;
+    word-break: break-word;
+    max-width: 88px;
+  }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    background: var(--gray-100);
+    color: var(--white);
+    font-size: 13px;
+    padding: 10px 20px;
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── Empty state ── */
+  .empty {
+    text-align: center;
+    color: var(--gray-60);
+    font-size: 14px;
+    padding: 80px 24px;
+    grid-column: 1 / -1;
+  }
+
+  /* ── Footer ── */
+  footer {
+    height: var(--header-h);
+    background: var(--gray-100);
+    color: #8D8D8D;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  footer span {
+    color: var(--white);
+    margin-left: 2px;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-20); border-radius: 3px; }
+
+  /* ── Copy-As popup ── */
+  #copy-popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+  }
+
+  #copy-popup-overlay.open { display: block; }
+
+  #copy-popup {
+    position: fixed;
+    background: #2C2C2E;
+    border-radius: 12px;
+    padding: 20px;
+    width: 320px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    color: #EBEBF5;
+    font-size: 14px;
+    z-index: 201;
+  }
+
+  #copy-popup .popup-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  #copy-popup .popup-row:last-of-type { margin-bottom: 0; }
+
+  #copy-popup .popup-label {
+    width: 100px;
+    flex-shrink: 0;
+    color: #EBEBF599;
+    font-size: 13px;
+  }
+
+  #copy-popup select,
+  #copy-popup input[type="number"] {
+    flex: 1;
+    background: #3A3A3C;
+    border: none;
+    border-radius: 6px;
+    color: #EBEBF5;
+    font-size: 14px;
+    padding: 6px 10px;
+    height: 32px;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  #copy-popup select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23EBEBF5' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-color: #3A3A3C;
+    padding-right: 28px;
+    cursor: pointer;
+  }
+
+  #copy-popup .popup-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  #copy-popup .popup-buttons button {
+    flex: 1;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  #popup-cancel {
+    background: #3A3A3C;
+    color: #EBEBF5;
+  }
+
+  #popup-copy {
+    background: #0A84FF;
+    color: #FFFFFF;
+  }
+
+  #popup-cancel:hover { background: #48484A; }
+  #popup-copy:hover { background: #0070E0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>IBM Icon Library</h1>
+  <div class="search-wrap">
+    <input type="search" id="search" placeholder="Search icons…" autocomplete="off" spellcheck="false">
+    <span class="search-icon">⌕</span>
+  </div>
+  <span class="count-badge" id="count-badge"></span>
+  <div class="color-select-wrap">
+    <label for="color-pick">Colour</label>
+    <select id="color-pick">
+      <option value="#0F62FE">IBM Blue</option>
+      <option value="#161616">Black</option>
+      <option value="#FFFFFF">White</option>
+    </select>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <ul id="cat-list"></ul>
+  </aside>
+  <main id="main">
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+
+<footer>
+  For enquiries: Slack <span>@annabelle.phua</span>
+</footer>
+
+<div id="toast">Copied to clipboard</div>
+
+<div id="copy-popup-overlay">
+  <div id="copy-popup">
+    <div class="popup-row">
+      <span class="popup-label">Copy As</span>
+      <select id="popup-format">
+        <option value="png">PNG</option>
+        <option value="svg">SVG</option>
+      </select>
+    </div>
+    <div class="popup-row" id="row-point-size">
+      <span class="popup-label">Point Size</span>
+      <input type="number" id="popup-size" value="256" min="16" max="2048" step="1">
+    </div>
+    <div class="popup-row" id="row-pixel-scale">
+      <span class="popup-label">Pixel Scale</span>
+      <input type="number" id="popup-scale" value="1" min="1" max="4" step="1">
+    </div>
+    <div class="popup-row" id="row-symbol-scale">
+      <span class="popup-label">Symbol Scale</span>
+      <select id="popup-symbol-scale">
+        <option value="0.75">Small</option>
+        <option value="1" selected>Medium</option>
+        <option value="1.25">Large</option>
+      </select>
+    </div>
+    <div class="popup-buttons">
+      <button id="popup-cancel">Cancel</button>
+      <button id="popup-copy">Copy Image</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  const grid = document.getElementById('grid');
+  const catList = document.getElementById('cat-list');
+  const searchInput = document.getElementById('search');
+  const countBadge = document.getElementById('count-badge');
+  const toast = document.getElementById('toast');
+  const colorPick = document.getElementById('color-pick');
+
+  let activeColor = '#0F62FE'; // IBM Blue (default — matches data.js)
+
+  colorPick.addEventListener('change', () => {
+    activeColor = colorPick.value;
+    document.body.classList.toggle('icon-white', activeColor === '#FFFFFF');
+    render();
+  });
+
+  const ALL = '__all__';
+  let activeCat = ALL;
+  let searchQuery = '';
+
+  // ── Build sidebar ──
+  const allBtn = makeBtn('All', 1561, true);
+  catList.appendChild(allBtn.li);
+
+  const cats = Object.keys(PICTOGRAMS).sort();
+  for (const cat of cats) {
+    const btn = makeBtn(cat, PICTOGRAMS[cat].length, false);
+    catList.appendChild(btn.li);
+  }
+
+  function makeBtn(label, count, isAll) {
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    const span = document.createElement('span');
+    span.className = 'cat-count';
+    span.textContent = count;
+    btn.textContent = label;
+    btn.appendChild(span);
+    if (isAll) btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#cat-list button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCat = isAll ? ALL : label;
+      searchInput.value = '';
+      searchQuery = '';
+      render();
+    });
+    li.appendChild(btn);
+    return { li, btn };
+  }
+
+  // ── Search ──
+  searchInput.addEventListener('input', () => {
+    searchQuery = searchInput.value.trim().toLowerCase();
+    if (searchQuery) {
+      activeCat = ALL;
+      document.querySelectorAll('#cat-list button').forEach(b => b.classList.remove('active'));
+      document.querySelector('#cat-list button').classList.add('active');
+    }
+    render();
+  });
+
+  // ── Render ──
+  function getIcons() {
+    if (activeCat === ALL) {
+      const all = [];
+      for (const cat of cats) {
+        for (const icon of PICTOGRAMS[cat]) all.push({ cat, ...icon });
+      }
+      return all;
+    }
+    return (PICTOGRAMS[activeCat] || []).map(icon => ({ cat: activeCat, ...icon }));
+  }
+
+  function render() {
+    const icons = getIcons().filter(icon =>
+      !searchQuery || icon.name.toLowerCase().includes(searchQuery)
+    );
+
+    countBadge.textContent = icons.length + ' icons';
+    grid.innerHTML = '';
+
+    if (icons.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = 'No icons found';
+      grid.appendChild(empty);
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    for (const icon of icons) {
+      const displaySvg = activeColor === '#0F62FE'
+        ? icon.svg
+        : icon.svg.replace(/#0F62FE/gi, activeColor);
+      const card = document.createElement('div');
+      card.className = 'icon-card';
+      card.innerHTML = displaySvg + '<span class="name">' + icon.name + '</span>';
+      card.addEventListener('click', () => copyIconPng(displaySvg, icon.name, 256));
+      card.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        openCopyPopup(e, displaySvg, icon.name);
+      });
+      frag.appendChild(card);
+    }
+    grid.appendChild(frag);
+  }
+
+  // ── Copy-As popup ──
+  const overlay = document.getElementById('copy-popup-overlay');
+  const popup = document.getElementById('copy-popup');
+  const popupFormat = document.getElementById('popup-format');
+  const popupSize = document.getElementById('popup-size');
+  const popupScale = document.getElementById('popup-scale');
+  const popupSymbolScale = document.getElementById('popup-symbol-scale');
+  const rowPointSize = document.getElementById('row-point-size');
+  const rowPixelScale = document.getElementById('row-pixel-scale');
+  const rowSymbolScale = document.getElementById('row-symbol-scale');
+
+  let popupSvg = '', popupName = '';
+
+  popupFormat.addEventListener('change', () => {
+    const isPng = popupFormat.value === 'png';
+    rowPointSize.style.display = isPng ? '' : 'none';
+    rowPixelScale.style.display = isPng ? '' : 'none';
+    rowSymbolScale.style.display = isPng ? '' : 'none';
+    document.getElementById('popup-copy').textContent = isPng ? 'Copy Image' : 'Copy SVG';
+  });
+
+  function openCopyPopup(e, svgStr, name) {
+    popupSvg = svgStr;
+    popupName = name;
+    popupFormat.value = 'png';
+    popupFormat.dispatchEvent(new Event('change'));
+
+    overlay.classList.add('open');
+
+    // Position near the click, kept within viewport
+    const pw = 320, ph = 260;
+    let x = e.clientX + 8;
+    let y = e.clientY + 8;
+    if (x + pw > window.innerWidth - 16) x = e.clientX - pw - 8;
+    if (y + ph > window.innerHeight - 16) y = e.clientY - ph - 8;
+    popup.style.left = Math.max(8, x) + 'px';
+    popup.style.top = Math.max(8, y) + 'px';
+  }
+
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+
+  document.getElementById('popup-cancel').addEventListener('click', () => {
+    overlay.classList.remove('open');
+  });
+
+  document.getElementById('popup-copy').addEventListener('click', async () => {
+    overlay.classList.remove('open');
+    const fmt = popupFormat.value;
+    if (fmt === 'svg') {
+      copyIconSvg(popupSvg, popupName);
+    } else {
+      const size = Math.round((parseInt(popupSize.value) || 256) * (parseInt(popupScale.value) || 1) * parseFloat(popupSymbolScale.value));
+      await copyIconPng(popupSvg, popupName, size);
+    }
+  });
+
+  // ── Copy as PNG ──
+  async function copyIconPng(svgStr, name, size) {
+    try {
+      const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.src = url;
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+
+      canvas.toBlob(async pngBlob => {
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+          showToast('Copied "' + name + '" as PNG (' + size + 'px)');
+        } catch (e) {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(pngBlob);
+          a.download = name.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '_') + '.png';
+          a.click();
+          showToast('Downloaded "' + name + '"');
+        }
+      }, 'image/png');
+    } catch (e) {
+      showToast('Error: ' + e.message);
+    }
+  }
+
+  // ── Copy as SVG ──
+  function copyIconSvg(svgStr, name) {
+    navigator.clipboard.writeText(svgStr).then(() => {
+      showToast('Copied "' + name + '" as SVG');
+    }).catch(() => {
+      showToast('Could not access clipboard');
+    });
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
