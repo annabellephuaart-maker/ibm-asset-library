@@ -262,6 +262,40 @@
     grid-column: 1 / -1;
   }
 
+  /* ── Dataset toggle tabs ── */
+  .ds-tabs {
+    display: flex;
+    gap: 0;
+    margin-left: 16px;
+  }
+
+  .ds-tabs button {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 500;
+    background: #393939;
+    border: 1px solid #525252;
+    color: #8D8D8D;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.1s, color 0.1s;
+    border-radius: 0;
+  }
+
+  .ds-tabs button:first-child { border-right: none; }
+
+  .ds-tabs button.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: var(--white);
+  }
+
+  .ds-tabs button:not(.active):hover {
+    background: #525252;
+    color: var(--white);
+  }
+
   /* ── Footer ── */
   footer {
     height: var(--header-h);
@@ -383,6 +417,10 @@
     <input type="search" id="search" placeholder="Search icons…" autocomplete="off" spellcheck="false">
     <span class="search-icon">⌕</span>
   </div>
+  <div class="ds-tabs">
+    <button id="tab-pictograms" class="active">Pictograms</button>
+    <button id="tab-icons">Icons</button>
+  </div>
   <span class="count-badge" id="count-badge"></span>
   <div class="color-select-wrap">
     <label for="color-pick">Colour</label>
@@ -450,8 +488,11 @@
   const countBadge = document.getElementById('count-badge');
   const toast = document.getElementById('toast');
   const colorPick = document.getElementById('color-pick');
+  const tabPictograms = document.getElementById('tab-pictograms');
+  const tabIcons = document.getElementById('tab-icons');
 
-  let activeColor = '#0F62FE'; // IBM Blue (default — matches data.js)
+  let activeColor = '#0F62FE';
+  let activeDataset = 'pictograms'; // 'pictograms' | 'icons'
 
   colorPick.addEventListener('change', () => {
     activeColor = colorPick.value;
@@ -459,19 +500,43 @@
     render();
   });
 
+  // ── Dataset toggle ──
+  tabPictograms.addEventListener('click', () => switchDataset('pictograms'));
+  tabIcons.addEventListener('click', () => switchDataset('icons'));
+
+  function switchDataset(ds) {
+    activeDataset = ds;
+    tabPictograms.classList.toggle('active', ds === 'pictograms');
+    tabIcons.classList.toggle('active', ds === 'icons');
+    searchInput.value = '';
+    searchQuery = '';
+    activeCat = ALL;
+    buildSidebar();
+    render();
+  }
+
+  function currentData() {
+    return activeDataset === 'pictograms' ? PICTOGRAMS : ICONS;
+  }
+
   const ALL = '__all__';
   let activeCat = ALL;
   let searchQuery = '';
 
   // ── Build sidebar ──
-  const allBtn = makeBtn('All', 1561, true);
-  catList.appendChild(allBtn.li);
-
-  const cats = Object.keys(PICTOGRAMS).sort();
-  for (const cat of cats) {
-    const btn = makeBtn(cat, PICTOGRAMS[cat].length, false);
-    catList.appendChild(btn.li);
+  function buildSidebar() {
+    catList.innerHTML = '';
+    const data = currentData();
+    const total = Object.values(data).reduce((s, v) => s + v.length, 0);
+    const allBtn = makeBtn('All', total, true);
+    catList.appendChild(allBtn.li);
+    for (const cat of Object.keys(data).sort()) {
+      const btn = makeBtn(cat, data[cat].length, false);
+      catList.appendChild(btn.li);
+    }
   }
+
+  buildSidebar();
 
   function makeBtn(label, count, isAll) {
     const li = document.createElement('li');
@@ -507,14 +572,16 @@
 
   // ── Render ──
   function getIcons() {
+    const data = currentData();
+    const cats = Object.keys(data).sort();
     if (activeCat === ALL) {
       const all = [];
       for (const cat of cats) {
-        for (const icon of PICTOGRAMS[cat]) all.push({ cat, ...icon });
+        for (const icon of data[cat]) all.push({ cat, ...icon });
       }
       return all;
     }
-    return (PICTOGRAMS[activeCat] || []).map(icon => ({ cat: activeCat, ...icon }));
+    return (data[activeCat] || []).map(icon => ({ cat: activeCat, ...icon }));
   }
 
   function render() {
