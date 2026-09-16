@@ -100,27 +100,47 @@
     white-space: nowrap;
   }
 
-  .color-select-wrap select {
-    background: #393939;
-    border: 1px solid #525252;
-    color: var(--white);
-    font-size: 13px;
-    padding: 4px 28px 4px 10px;
-    height: 36px;
+  /* Colour wheel swatch */
+  #color-wheel {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #525252;
+    padding: 0;
     cursor: pointer;
+    background: none;
     outline: none;
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238D8D8D' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
+    overflow: hidden;
   }
 
-  .color-select-wrap select:focus { border-color: var(--blue); }
+  #color-wheel::-webkit-color-swatch-wrapper { padding: 0; }
+  #color-wheel::-webkit-color-swatch { border: none; border-radius: 50%; }
+  #color-wheel::-moz-color-swatch { border: none; border-radius: 50%; }
+  #color-wheel:focus { border-color: #8D8D8D; }
 
-  /* White mode: dark card backgrounds */
-  body.icon-white .icon-card { background: #393939; }
-  body.icon-white .icon-card:hover { border-color: #8D8D8D; }
+  /* Hex text input */
+  #color-hex {
+    width: 80px;
+    height: 30px;
+    background: #393939;
+    border: 1px solid #525252;
+    color: var(--white);
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 0 8px;
+    outline: none;
+    letter-spacing: 0.5px;
+  }
+
+  #color-hex:focus { border-color: #8D8D8D; }
+  #color-hex.invalid { border-color: #FA4D56; }
+
+  /* Light colour mode: dark card backgrounds so icons are visible */
+  body.icon-light .icon-card { background: #393939; }
+  body.icon-light .icon-card:hover { border-color: #8D8D8D; }
+  body.icon-light .kw-tag { background: #525252; color: #C6C6C6; }
 
   /* ── Layout ── */
   .layout {
@@ -450,7 +470,8 @@
 
     .color-select-wrap { order: 1; margin-left: auto; }
     .color-select-wrap label { display: none; }
-    .color-select-wrap select { height: 32px; font-size: 12px; }
+    #color-wheel { width: 26px; height: 26px; }
+    #color-hex { width: 68px; height: 26px; font-size: 11px; }
 
     aside { display: none; }
 
@@ -508,12 +529,9 @@
   </div>
   <span class="count-badge" id="count-badge"></span>
   <div class="color-select-wrap">
-    <label for="color-pick">Colour</label>
-    <select id="color-pick">
-      <option value="#0F62FE">Blue</option>
-      <option value="#161616">Black</option>
-      <option value="#FFFFFF">White</option>
-    </select>
+    <label>Colour</label>
+    <input type="color" id="color-wheel" value="#0F62FE" title="Pick a colour">
+    <input type="text" id="color-hex" value="#0F62FE" maxlength="7" spellcheck="false" placeholder="#000000">
   </div>
 </header>
 
@@ -588,21 +606,53 @@
   const searchInput = document.getElementById('search');
   const countBadge = document.getElementById('count-badge');
   const toast = document.getElementById('toast');
-  const colorPick = document.getElementById('color-pick');
+  const colorWheel = document.getElementById('color-wheel');
+  const colorHex = document.getElementById('color-hex');
   const tabPictograms = document.getElementById('tab-pictograms');
   const tabIcons = document.getElementById('tab-icons');
 
   let activeColor = '#0F62FE';
   let activeDataset = 'pictograms';
 
+  // Determine if a colour is visually light (needs dark card background)
+  function isLightColor(hex) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    // Perceived luminance
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 180;
+  }
+
   // Update CSS variable so all icons repaint via CSS (no DOM rebuild needed)
   function setActiveColor(hex) {
     activeColor = hex;
     document.documentElement.style.setProperty('--active-color', hex);
-    document.body.classList.toggle('icon-white', hex === '#FFFFFF');
+    document.body.classList.toggle('icon-light', isLightColor(hex));
   }
 
-  colorPick.addEventListener('change', () => setActiveColor(colorPick.value));
+  // Colour wheel → sync hex input
+  colorWheel.addEventListener('input', () => {
+    const hex = colorWheel.value;
+    colorHex.value = hex.toUpperCase();
+    colorHex.classList.remove('invalid');
+    setActiveColor(hex);
+  });
+
+  // Hex input → validate and sync wheel
+  colorHex.addEventListener('input', () => {
+    let val = colorHex.value.trim();
+    if (!val.startsWith('#')) val = '#' + val;
+    const valid = /^#[0-9A-Fa-f]{6}$/.test(val);
+    colorHex.classList.toggle('invalid', !valid);
+    if (valid) {
+      colorWheel.value = val;
+      setActiveColor(val);
+    }
+  });
+
+  colorHex.addEventListener('keydown', e => {
+    if (e.key === 'Enter') colorHex.blur();
+  });
 
   // ── Dataset toggle ──
   tabPictograms.addEventListener('click', () => switchDataset('pictograms'));
